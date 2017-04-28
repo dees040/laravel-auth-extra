@@ -1,0 +1,29 @@
+{
+  "name": "dees040/laravel-auth-extra",
+  "description": "A Laravel package for extra authentication options.",
+  "type": "library",
+  "license": "Beerware",
+  "keywords": [
+    "laravel",
+    "auth"
+  ],
+  "authors": [
+    {
+      "name": "dees040",
+      "email": "deesoomens@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.4",
+    "illuminate/support": "^5.0,<5.5"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "dees040\\AuthExtra\\": "src/"
+    }
+  },
+  "minimum-stability": "dev"
+}
