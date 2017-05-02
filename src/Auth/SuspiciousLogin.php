@@ -165,7 +165,7 @@ class SuspiciousLogin
         if (count($attempts) == 1) {
             $first = new Carbon($attempts[0]->created_at);
             $second = Carbon::now();
-        } else if (count($attempts) == 2) {
+        } elseif (count($attempts) == 2) {
             $first = new Carbon($attempts[0]->created_at);
             $second = new Carbon($attempts[1]->created_at);
         } else {

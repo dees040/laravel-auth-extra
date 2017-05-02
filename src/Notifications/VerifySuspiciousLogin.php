@@ -5,7 +5,6 @@ namespace dees040\AuthExtra\Notifications;
 use Illuminate\Bus\Queueable;
 use dees040\AuthExtra\Locator;
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class VerifySuspiciousLogin extends Notification
@@ -48,13 +47,13 @@ class VerifySuspiciousLogin extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = route('verify.user') . '?token=';
+        $url = route('verify.user').'?token=';
 
         return (new MailMessage)
             ->subject('Suspicious login')
-            ->line('Dear ' . $notifiable->name . ',')
+            ->line('Dear '.$notifiable->name.',')
             ->line('Somebody tried to login into your account. The login came from:')
-            ->line($this->location->getCity() . ', ' .$this->location->getCountry() . ' and the following IP: ' . $this->location->getIp())
+            ->line($this->location->getCity().', '.$this->location->getCountry().' and the following IP: '.$this->location->getIp())
             ->action('Secure your account now', $url)
             ->line('Sorry for any inconveniences!');
     }
