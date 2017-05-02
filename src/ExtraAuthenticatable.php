@@ -32,4 +32,16 @@ trait ExtraAuthenticatable
     {
         return AuthManager::getActivationManager()->isVerified($this);
     }
+
+    /**
+     * Determine if the current model has been blocked.
+     * This means there has been a suspicious login and the
+     * user needs to verify the login attempt.
+     *
+     * @return bool
+     */
+    public function isBlocked()
+    {
+        return AuthManager::userIsBlocked($this);
+    }
 }

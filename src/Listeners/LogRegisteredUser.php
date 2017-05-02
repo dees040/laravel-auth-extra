@@ -16,7 +16,11 @@ class LogRegisteredUser extends Listener
     public function handle(Registered $event)
     {
         if ($this->config()->verifyEmail()) {
-            $this->manager->sendVerificationEmail($event->user);
+            $this->manager->getActivationManager()->create($event->user);
+        }
+
+        if ($this->config()->trackLoginAttempts() || $this->config()->verifySuspiciousLogin()) {
+            $this->manager->getLoginManager()->logFirst($event->user);
         }
     }
 }

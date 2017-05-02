@@ -15,9 +15,6 @@ class ServiceProvider extends BaseServiceProvider
         'Illuminate\Auth\Events\Registered' => [
             Listeners\LogRegisteredUser::class,
         ],
-        'Illuminate\Auth\Events\Attempting' => [
-            Listeners\LogAuthenticationAttempt::class,
-        ],
         'Illuminate\Auth\Events\Login' => [
             Listeners\LogSuccessfulLogin::class,
         ],
@@ -38,7 +35,7 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__ . '/../config/auth_extra.php' => config_path('auth_extra.php'),
         ], 'config');
 
-        $this->loadMigrationsFrom(__DIR__.'/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../migrations');
 
         $this->loadRoutesFrom(__DIR__.'/../routes.php');
 
@@ -54,8 +51,10 @@ class ServiceProvider extends BaseServiceProvider
     {
         $event = $this->app['events'];
 
-        foreach ($this->events as $for => $with) {
-            $event->listen($for, $with);
+        foreach ($this->events as $for => $listeners) {
+            foreach ($listeners as $with) {
+                $event->listen($for, $with);
+            }
         }
     }
 

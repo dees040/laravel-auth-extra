@@ -3,29 +3,30 @@
 namespace dees040\AuthExtra\Notifications;
 
 use Illuminate\Bus\Queueable;
+use dees040\AuthExtra\Locator;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class ActivateYourAccount extends Notification
+class VerifySuspiciousLogin extends Notification
 {
     use Queueable;
 
     /**
-     * The token to send to the user.
+     * The Locator instance.
      *
-     * @var string
+     * @var \dees040\AuthExtra\Locator
      */
-    private $token;
+    private $location;
 
     /**
      * Create a new notification instance.
      *
-     * @param  string  $token
+     * @param  \dees040\AuthExtra\Locator  $location
      */
-    public function __construct($token)
+    public function __construct(Locator $location)
     {
-        $this->token = $token;
+        $this->location = $location;
     }
 
     /**
@@ -47,14 +48,15 @@ class ActivateYourAccount extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = route('activation.email') . '?token=' . $this->token;
+        $url = route('verify.user') . '?token=';
 
         return (new MailMessage)
-            ->subject('Activate your account')
+            ->subject('Suspicious login')
             ->line('Dear ' . $notifiable->name . ',')
-            ->line('Please activate your account by clicking on the following button.')
-            ->action('Activate your account', $url)
-            ->line('Thank you for choosing us!');
+            ->line('Somebody tried to login into your account. The login came from:')
+            ->line($this->location->getCity() . ', ' .$this->location->getCountry() . ' and the following IP: ' . $this->location->getIp())
+            ->action('Secure your account now', $url)
+            ->line('Sorry for any inconveniences!');
     }
 
     /**

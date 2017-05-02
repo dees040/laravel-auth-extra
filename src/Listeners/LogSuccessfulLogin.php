@@ -18,5 +18,11 @@ class LogSuccessfulLogin extends Listener
         if ($this->config()->trackLoginAttempts()) {
             $this->manager->getLoginManager()->log($event->user, true);
         }
+
+        if ($event->user->isBlocked()) {
+            abort(403, 'You need to verify your identity.');
+
+            $this->manager->getLoginManager()->logout($event->user);
+        }
     }
 }

@@ -2,19 +2,13 @@
 
 namespace dees040\AuthExtra;
 
-use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
+use dees040\AuthExtra\Auth\LoginManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use dees040\AuthExtra\Activations\ActivationManager;
 
 class AuthManager
 {
-    /**
-     * The application instance.
-     *
-     * @var \Illuminate\Foundation\Application
-     */
-    private $app;
-
     /**
      * The ConfigManager instance.
      *
@@ -25,7 +19,7 @@ class AuthManager
     /**
      * The LoginManager instance.
      *
-     * @var \dees040\AuthExtra\LoginManager
+     * @var \dees040\AuthExtra\Auth\LoginManager
      */
     private $loginManager;
 
@@ -39,43 +33,26 @@ class AuthManager
     /**
      * AuthManager constructor.
      *
-     * @param  \Illuminate\Foundation\Application  $app
      * @param  \dees040\AuthExtra\ConfigManager  $config
-     * @param  \dees040\AuthExtra\LoginManager  $loginManager
+     * @param  \dees040\AuthExtra\Auth\LoginManager  $loginManager
      * @param  \dees040\AuthExtra\Activations\ActivationManager  $activations
      */
-    public function __construct(
-        Application $app,
-        ConfigManager $config,
-        LoginManager $loginManager,
-        ActivationManager $activations)
+    public function __construct(ConfigManager $config, LoginManager $loginManager, ActivationManager $activations)
     {
-        $this->app = $app;
         $this->config = $config;
         $this->activations = $activations;
         $this->loginManager = $loginManager;
     }
 
     /**
-     * Send a email to verify the user it's email address.
-     *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @return void
-     */
-    public function sendVerificationEmail(Authenticatable $user)
-    {
-        $this->activations->create($user);
-    }
-
-    /**
      * Verify the activation token given in the route.
      *
-     * @param  string  $token
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function verifyActivationToken($token)
+    public function verifyActivationToken(Request $request)
     {
-        $user = $this->activations->verify($token);
+        $user = $this->activations->verify($request->get('token'));
 
         if (is_null($user)) {
             abort(403);
@@ -87,16 +64,30 @@ class AuthManager
     }
 
     /**
-     * Determine if a login is suspicious and take action
-     * if it looks suspicious.
+     * Verify the login.
      *
-     * @return void
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function checkForSuspiciousLogin()
+    public function verifyLogin(Request $request)
     {
-        if ($this->loginManager->isSuspiciousLogin()) {
-            $this->loginManager->verifyUser();
-        }
+        return redirect('/');
+    }
+
+    /**
+     * Determine if the given user is blocked.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @return bool
+     */
+    public function userIsBlocked(Authenticatable $user)
+    {
+        $attempt = $this->getLoginManager()->getTable()
+            ->where('user_id', $user->id)
+            ->latest()
+            ->first();
+
+        return $attempt->type == 9;
     }
 
     /**
@@ -135,7 +126,7 @@ class AuthManager
     /**
      * Return the LoginManager instance.
      *
-     * @return \dees040\AuthExtra\LoginManager
+     * @return \dees040\AuthExtra\Auth\LoginManager
      */
     public function getLoginManager()
     {

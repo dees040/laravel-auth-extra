@@ -2,6 +2,7 @@
 
 namespace dees040\AuthExtra\Activations;
 
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Application;
@@ -73,7 +74,7 @@ class ActivationToken
         // the database so that we can verify the token within the activation.
         $token = $this->createNewToken();
 
-        $this->getTable()->insert($this->getPayload($user->id, $token));
+        $this->getTable()->insert($this->getPayload($user->email, $token));
 
         return $token;
     }
@@ -87,7 +88,7 @@ class ActivationToken
      */
     public function exists(Authenticatable $user, $token)
     {
-        $record = (array) $this->getTable()->where('user_id', $user->id)->first();
+        $record = (array) $this->getTable()->where('email', $user->email)->first();
 
         return $record &&
             ! $this->tokenExpired($record['created_at'])
@@ -137,15 +138,13 @@ class ActivationToken
     {
         $record = $this->getTable()
             ->where('token', $token)
-            ->first(['user_id']);
+            ->first(['email']);
 
         if (! $record) {
             return null;
         }
 
-        return $this->getTable('users')
-            ->where('id', $record->user_id)
-            ->first();
+        return User::where('email', $record->email)->first();
     }
 
     /**
@@ -167,19 +166,19 @@ class ActivationToken
      */
     protected function deleteExisting(Authenticatable $user)
     {
-        return $this->getTable()->where('user_id', $user->id)->delete();
+        return $this->getTable()->where('email', $user->email)->delete();
     }
 
     /**
      * Build the record payload for the table.
      *
-     * @param  integer  $id
+     * @param  string  $email
      * @param  string  $token
      * @return array
      */
-    protected function getPayload($id, $token)
+    protected function getPayload($email, $token)
     {
-        return ['user_id' => $id, 'token' => $token, 'created_at' => new Carbon()];
+        return ['email' => $email, 'token' => $token, 'created_at' => new Carbon()];
     }
 
     /**

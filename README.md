@@ -2,12 +2,12 @@
 
 This plugin gives you extra options for Authentication, such as:
 
-- **Track login attempts**
-- **Verify email address**
-- **Block suspicious login attempts**
+- [x] Track login attempts
+- [x] Verify email address
+- [ ] Block suspicious login attempts
+- [ ] Two factor authentication
 
 ## Installation
-
 
 Install the latest version with composer.
 
@@ -94,17 +94,17 @@ When a visitor of your application tries to login we will create a record into t
 
 ### Suspicious login attempts
 
+**Currently in Development**
+
 To block suspicious login attempts, set the `verify_login_attempt_on_suspicious_login` config value to `true`.
 
 When a visitor tries to login the package will check for any suspicious things. If the login attempt seem suspicious we will send the user a notification about the login attempt. He or she than can take action to secure their account.
 
+### Two Factor Authentication
+
+This is not available yet.
+
 ## Configurations
-
-**`login_identifier_field`** (`string` or `array`)
-
-**deprecated**
-
-When the user logs in Laravel look to the uses the email to for authentication. You can change this in the LoginController. You might use an username instead of an email. Or maybe you will check for both? In the option you specify which field the user fills in for authentication. If you fill in both the plugin will automatically check which one to use.
 
 **`verify_email`** (`bool`)
 
@@ -132,3 +132,7 @@ If this options is set to true, the package will give the user a notification wh
 **`notifications`** (`array`)
 
 This option store all the notification. If you wish to use your own notification you can create a notification and then change it here.
+
+**`routes`** (`array`)
+
+This array stores the routes. These routes are used for email verification and suspicious login verification. If you wish you can change these routes here.

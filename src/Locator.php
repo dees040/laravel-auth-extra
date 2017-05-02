@@ -37,7 +37,7 @@ class Locator
     /**
      * Locator constructor.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      */
     public function __construct(Request $request)
     {
@@ -51,7 +51,7 @@ class Locator
      */
     public function getIp()
     {
-        return $this->request->ip();
+        return '178.238.99.230'; // $this->request->ip();
     }
 
     /**
@@ -66,6 +66,20 @@ class Locator
         }
 
         return $this->info['country'];
+    }
+
+    /**
+     * Get the city of visitor.
+     *
+     * @return string
+     */
+    public function getCity()
+    {
+        if (! $this->located) {
+            $this->getVisitorInfo();
+        }
+
+        return $this->info['city'];
     }
 
     /**
@@ -96,7 +110,7 @@ class Locator
     /**
      * Convert a continent code to a full continent name.
      *
-     * @param  string $code
+     * @param  string  $code
      * @return string
      */
     protected function convertContinent($code)

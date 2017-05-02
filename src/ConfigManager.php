@@ -2,7 +2,7 @@
 
 namespace dees040\AuthExtra;
 
-use Illuminate\Foundation\Application;
+use Illuminate\Config\Repository;
 use dees040\AuthExtra\Exceptions\ConfigNotFoundExceptions;
 
 class ConfigManager
@@ -12,17 +12,17 @@ class ConfigManager
      *
      * @var \Illuminate\Foundation\Application
      */
-    private $app;
+    private $config;
 
     /**
      * ConfigManager constructor.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Illuminate\Config\Repository  $config
      * @throws \dees040\AuthExtra\Exceptions\ConfigNotFoundExceptions
      */
-    public function __construct(Application $app)
+    public function __construct(Repository $config)
     {
-        $this->app = $app;
+        $this->config = $config;
     }
 
     /**
@@ -58,6 +58,11 @@ class ConfigManager
         return $this->getBoolean('verify_login_attempt_on_suspicious_login');
     }
 
+    /**
+     * Get the login attempts model.
+     *
+     * @return mixed
+     */
     public function loginAttemptsModel()
     {
         return $this->getConfigByKey('login_attempts_model');
@@ -75,6 +80,17 @@ class ConfigManager
     }
 
     /**
+     * Get a route.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function getRoute($key)
+    {
+        return $this->getConfigByKey("routes.{$key}");
+    }
+
+    /**
      * Get a config by the given key.
      *
      * @param  string  $key
@@ -83,15 +99,17 @@ class ConfigManager
      */
     public function getConfigByKey($key)
     {
-        if (! array_key_exists('auth_extra', $this->app)) {
-            throw new ConfigNotFoundExceptions("The config file 'auth_extra.php' coudln't be found. Did published the configuration?");
+        if (! $this->config->has('auth_extra')) {
+            throw new ConfigNotFoundExceptions("The config file 'auth_extra.php' coudln't be found. Did you published the configuration?");
         }
 
-        if (! array_key_exists($key, $this->app['auth_extra'])) {
+        $fullKey = "auth_extra.{$key}";
+
+        if (! $this->config->has($fullKey)) {
             throw new ConfigNotFoundExceptions("The config '{$key}' is not found.");
         }
 
-        return $this->app[$key];
+        return $this->config->get($fullKey);
     }
 
     /**

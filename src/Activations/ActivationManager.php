@@ -13,7 +13,7 @@ class ActivationManager
     /**
      * The ActivationToken instance.
      *
-     * @var \App\Library\Activations\ActivationToken
+     * @var \dees040\AuthExtra\Activations\ActivationToken
      */
     private $token;
 

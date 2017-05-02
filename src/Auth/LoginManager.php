@@ -1,6 +1,6 @@
 <?php
 
-namespace dees040\AuthExtra;
+namespace dees040\AuthExtra\Auth;
 
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -16,13 +16,6 @@ class LoginManager
     private $connection;
 
     /**
-     * The Locator instance.
-     *
-     * @var \dees040\AuthExtra\Locator
-     */
-    private $locator;
-
-    /**
      * The AuthManager instance.
      *
      * @var \Illuminate\Auth\AuthManager
@@ -30,41 +23,56 @@ class LoginManager
     private $auth;
 
     /**
+     * The AuthLogger instance.
+     *
+     * @var \dees040\AuthExtra\Auth\AuthLogger
+     */
+    private $logger;
+
+    /**
      * LoginManager constructor.
      *
      * @param  \Illuminate\Database\ConnectionInterface  $connection
-     * @param  \dees040\AuthExtra\Locator  $locator
      * @param  \Illuminate\Auth\AuthManager  $auth
+     * @param  \dees040\AuthExtra\Auth\AuthLogger  $logger
      */
-    public function __construct(ConnectionInterface $connection, Locator $locator, BaseAuthManager $auth)
+    public function __construct(ConnectionInterface $connection, BaseAuthManager $auth, AuthLogger $logger)
     {
         $this->auth = $auth;
-        $this->locator = $locator;
+        $this->logger = $logger;
         $this->connection = $connection;
     }
 
     /**
      * Log a login attempt.
      *
-     * @param  \Illuminate\Contracts\Auth\Authenticatable|null  $user
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
      * @param  bool  $success
-     * @param  array|null  $credentials
      * @return void
      */
-    public function log($user, $success, $credentials = null)
+    public function log($user, $success)
     {
-        $this->getTable()->insert([
-            'user_id' => $user ? $user->id : null,
-            'ip' => $this->locator->getIp(),
-            'country' => $this->locator->getCountry(),
-            'success' => $success,
-            'credentials' => $credentials,
-        ]);
+        $login = new SuspiciousLogin($user, $this->getConnection());
+
+        if ($login->needsVerification()) {
+            $this->logger->lock($user, $success, $login);
+        } else {
+            $this->logger->log($user, $success, $login);
+        }
     }
 
-    public function isSuspiciousLogin()
+    /**
+     * Log the first login attempt which is created by
+     * a register event.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @return void
+     */
+    public function logFirst($user)
     {
-        return false;
+        $login = new SuspiciousLogin(null, $this->getConnection());
+
+        $this->logger->log($user, true, $login);
     }
 
     /**
@@ -79,8 +87,19 @@ class LoginManager
     }
 
     /**
+     * Logout the given user.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @return void
+     */
+    public function logout(Authenticatable $user)
+    {
+        $this->auth->logout($user);
+    }
+
+    /**
      * @param  \Illuminate\Database\ConnectionInterface  $connection
-     * @return \dees040\AuthExtra\LoginManager
+     * @return \dees040\AuthExtra\Auth\LoginManager
      */
     public function setConnection(ConnectionInterface $connection)
     {

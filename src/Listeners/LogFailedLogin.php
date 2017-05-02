@@ -16,7 +16,7 @@ class LogFailedLogin extends Listener
     public function handle(Failed $event)
     {
         if ($this->config()->trackLoginAttempts()) {
-            $this->manager->getLoginManager()->log($event->user, false, $event->credentials);
+            $this->manager->getLoginManager()->log($event->user, false);
         }
     }
 }
