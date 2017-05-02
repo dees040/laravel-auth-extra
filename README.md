@@ -116,8 +116,12 @@ If set to `true` the package will automatically track any login attempt. It will
 - `user_id` (`integer`) - Only if user is known
 - `ip` (`string`)
 - `country` (`string`)
+- `city` (`string`)
 - `success` (`boolean`) - `true` if the login attempt was successful, `false` if not.
-- `credentials` (`array`) - The credentials given by the user. If a password is given it will be stores encrypted.
+- `type` (`integer`) - The type of login. 0 = successful, 1 = failed, 9 = blocked.
+- `suspicious` (`integer`) - Keep track of how suspicious the login attempts are.
+- `created_at` (`timestamp`)
+- `updated_at` (`timestamp`)
 
 **Note:** if `verify_login_attempt_on_suspicious_login` config is set to true this options will automatically be set to true.
 
