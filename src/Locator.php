@@ -31,7 +31,7 @@ class Locator
         'country' => '',
         'country_code' => '',
         'continent' => '',
-        'continent_code' => ''
+        'continent_code' => '',
     ];
 
     /**
@@ -89,7 +89,7 @@ class Locator
     {
         $ip = $this->getIp();
 
-        $data = json_decode(file_get_contents('http://www.geoplugin.net/json.gp?ip=' . $ip));
+        $data = json_decode(file_get_contents('http://www.geoplugin.net/json.gp?ip='.$ip));
 
         if (strlen(trim($data->geoplugin_countryCode)) == 2) {
             $this->info = [
@@ -98,7 +98,7 @@ class Locator
                 'country' => $data->geoplugin_countryName,
                 'country_code' => $data->geoplugin_countryCode,
                 'continent' => $this->convertContinent($data->geoplugin_continentCode),
-                'continent_code' => $data->geoplugin_continentCode
+                'continent_code' => $data->geoplugin_continentCode,
             ];
 
             $this->located = true;
@@ -122,7 +122,7 @@ class Locator
             'EU' => 'Europe',
             'OC' => 'Australia (Oceania)',
             'NA' => 'North America',
-            'SA' => 'South America'
+            'SA' => 'South America',
         ];
 
         return $continents[strtoupper($code)];

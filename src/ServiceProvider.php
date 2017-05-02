@@ -32,7 +32,7 @@ class ServiceProvider extends BaseServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/auth_extra.php' => config_path('auth_extra.php'),
+            __DIR__.'/../config/auth_extra.php' => config_path('auth_extra.php'),
         ], 'config');
 
         $this->loadMigrationsFrom(__DIR__.'/../migrations');

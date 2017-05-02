@@ -35,7 +35,7 @@ class ActivationToken
     /**
      * The amount of time the token is valid.
      *
-     * @var integer
+     * @var int
      */
     private $expires;
 
@@ -141,7 +141,7 @@ class ActivationToken
             ->first(['email']);
 
         if (! $record) {
-            return null;
+            return;
         }
 
         return User::where('email', $record->email)->first();

@@ -18,6 +18,6 @@ return [
     'routes' => [
         'verify_email' => '/activation/email',
         'verify_user' => '/verify/user',
-    ]
+    ],
 
 ];

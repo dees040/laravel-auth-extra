@@ -61,7 +61,7 @@ class ActivationManager
         $user = $this->token->getUser($token);
 
         if (! $user || ! $this->token->exists($user, $token)) {
-            return null;
+            return;
         }
 
         $this->token->delete($user);

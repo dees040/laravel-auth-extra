@@ -4,7 +4,6 @@ namespace dees040\AuthExtra\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class ActivateYourAccount extends Notification
@@ -47,11 +46,11 @@ class ActivateYourAccount extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = route('activation.email') . '?token=' . $this->token;
+        $url = route('activation.email').'?token='.$this->token;
 
         return (new MailMessage)
             ->subject('Activate your account')
-            ->line('Dear ' . $notifiable->name . ',')
+            ->line('Dear '.$notifiable->name.',')
             ->line('Please activate your account by clicking on the following button.')
             ->action('Activate your account', $url)
             ->line('Thank you for choosing us!');

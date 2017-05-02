@@ -11,7 +11,8 @@ class AuthManager extends Facade
      *
      * @return string
      */
-    protected static function getFacadeAccessor() {
+    protected static function getFacadeAccessor()
+    {
         return 'dees040\AuthExtra\AuthManager';
     }
 }
